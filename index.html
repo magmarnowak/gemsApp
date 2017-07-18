@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="store">
   <head>
+    <meta charset="utf-8" />
     <title>My AngularJS App</title>
     <script src="angular.min.js"></script>
     <script src="bootstrap.min.js"></script>
@@ -9,66 +10,31 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body ng-controller="StoreController as store">
-    <h1>Flatlander Gems</h1>
-    <h2>An Angular Store</h2>
+    <!--  Store Header -->
+    <header>
+      <h1>Flatlander Gems</h1>
+      <h2>An Angular Store</h2>
+    </header>
+
+    <!-- Products Container -->
     <ul class="list-group">
-      <li class="list-group-item" ng-repeat="product in store.products">
-        <h3>
-          {{product.name}}
-          <em class="pull-right"> {{product.price | currency}} </em>
-          <img ng-src="{{product.images[0].full}}"/>
-          <section ng-controller="PanelController as panel">
-            <ul class="nav nav-pills">
-              <li ng-class="{ active:panel.isSelected(1)}">
-                <a href ng-click="panel.selectTab(1)">Description</a>
-              </li>
-              <li ng-class="{ active:panel.isSelected(2)}">
-                <a href ng-click="panel.selectTab(2)">Specifications</a>
-              </li>
-              <li ng-class="{ active:panel.isSelected(3)}">
-                <a href ng-click="panel.selectTab(3)">Reviews</a>
-              </li>
-            </ul>
-            <div class="panel" ng-show="panel.isSelected(1)">
-              <h4>Description</h4>
-              <p>{{product.description}}</p>
-            </div>
-            <div class="panel" ng-show="panel.isSelected(2)">
-              <h4>Specifications</h4>
-              <blockquote>None yet</blockquote>
-            </div>
-            <div class="panel" ng-show="panel.isSelected(3)">
-              <h4>Reviews</h4>
-              <li ng-repeat="review in product.reviews">
-                <blockquote>
-                  <b>Stars: {{review.stars}}</b>
-                  {{review.body}}
-                  <cite>by: {{review.author}}</cite>
-                </blockquote>
-              </li>
-              <form name="reviewForm" ng-controller="ReviewController as reviewCtrl"
-              ng-submit="reviewForm.$valid && reviewCtrl.addReview(product)" novalidate>
-                <blockquote ng-show="reviewCtrl.review.stars">
-                  <strong>{{reviewCtrl.review.stars}} Stars</strong>
-                  {{reviewCtrl.review.body}}
-                  <cite>—{{reviewCtrl.review.author}}</cite>
-                </blockquote>
-                <h4>Submit a Review</h4>
-                <select ng-model="reviewCtrl.review.stars" ng-options="stars for stars in [1,2,3,4,5]" title="Stars" required>
-                  <option selected disabled value="">Rate the Product</option>
-                </select>
-                <textarea ng-model="reviewCtrl.review.body" required></textarea>
-                <label>by:</label>
-                <input ng-model="reviewCtrl.review.author" type="email" required/>
-                <div>
-                  reviewFrom is {{reviewForm.$valid}}
-                </div>
-                <input type="submit" value="Submit" />
-              </form>
-            </div>
-          </section>
-        </h3>
-      </li>
+      <!--  Product Container -->
+      <div class="list-group-item" ng-repeat="product in store.products | orderBy: '-price'">
+        <product-title></product-title>
+        <!-- Image Gallery -->
+        <div ng-show="product.images.length" ng-controller="GalleryController as gallery">
+          <div class="img-wrap">
+            <img ng-src="{{product.images[gallery.imageIndex]}}" class="img-thumbnail center-block"/>
+          </div>
+          <ul class="img-thumbnail-clearfix">
+            <li class="small-image pull-left thumbnail" ng-repeat="image in product.images" ng-click="gallery.currentImageChange($index)">
+              <img src="{{image}}" />
+            </li>
+          </ul>
+        </div>
+        <!-- Product Tabs -->
+        <product-panels></product-panels>
+      </div>
     </ul>
   </body>
 </html>
