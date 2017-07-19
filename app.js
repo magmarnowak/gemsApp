@@ -7,7 +7,7 @@
 
     store.products = [];
 
-    $http.get('./store-products.json').then(function(reponse){
+    $http.get('./store-products.json').then(function(response){
       store.products = response.data;
     });
   }]);
